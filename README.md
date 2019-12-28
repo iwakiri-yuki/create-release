@@ -11,6 +11,7 @@ Create a workflow `.yml` file in your `.github/workflows` directory. An [example
 For more information on these inputs, see the [API Documentation](https://developer.github.com/v3/repos/releases/#input)
 
 - `tag_name`: The name of the tag for this release
+- `backup_tag_name`: The name of the backup tag for this release (Optional)
 - `release_name`: The name of the release
 - `body`: Text describing the contents of the release
 - `draft`: `true` to create a draft (unpublished) release, `false` to create a published one. Default: `false`

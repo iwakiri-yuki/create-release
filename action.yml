@@ -5,6 +5,9 @@ inputs:
   tag_name:
     description: 'The name of the tag. This should come from the webhook payload, `github.GITHUB_REF` when a user pushes a new tag'
     required: true
+  backup_tag_name:
+    description: 'The name of the backup tag. If a release with the tag `tag` already exists, it will be moved to the backup tag. Any old backup release with the backup tag will be removed.'
+    required: false
   release_name:
     description: 'The name of the release. For example, `Release v1.0.1`'
     required: true
