@@ -4434,7 +4434,7 @@ async function run() {
     const octokit = github.getOctokit(myToken);
 
     // Get owner and repo from context of payload that triggered the action
-    const { owner, repo } = github.context.repo();
+    const { owner, repo } = github.context.repo;
 
     // Get the inputs from the workflow file: https://github.com/actions/toolkit/tree/master/packages/core#inputsoutputs
     const backupTagName = core.getInput('backup_tag_name');
