@@ -24,17 +24,21 @@ async function run() {
     let backupReleaseSha;
 
     try {
+      core.info('Trying to find existing release tag');
       const tagResponse = await github.git.getRef({
         owner,
         repo,
         ref: `tags/${tag}`
       });
       backupReleaseSha = tagResponse.data.object.sha;
+      core.info(`Found existing release tag at ${backupReleaseSha}`);
     } catch (e) {
       // Do nothing
+      core.info(`Error looking for existing release tag: ${e}`);
     }
 
     try {
+      core.info('Trying to find existing release');
       // Get old release with `tag`
       const oldRelease = await github.repos.getReleaseByTag({
         owner,
@@ -45,6 +49,7 @@ async function run() {
       if (backupTag) {
         try {
           // Try to find backup release
+          core.info('Find backup release');
           const backupRelease = await github.repos.getReleaseByTag({
             owner,
             repo,
@@ -52,15 +57,18 @@ async function run() {
           });
 
           // Delete backup release
+          core.info('Delete backup release');
           await github.repos.deleteRelease({
             owner,
             repo,
             release_id: backupRelease.data.id
           });
         } catch (e) {
+          core.info(`Error deleting existing backup release: ${e}`);
           // Do nothing
         }
 
+        core.info('Making current release a backup release');
         // Move current `tag` release to `backupTag`
         await github.repos.updateRelease({
           owner,
@@ -72,6 +80,7 @@ async function run() {
             ${oldRelease.data.body}`
         });
 
+        core.info('Updating backup tag');
         await github.git.updateRef({
           owner,
           repo,
@@ -80,6 +89,7 @@ async function run() {
           force: true
         });
       } else {
+        core.info(`Deleting old release (${oldRelease.data.id})`);
         await github.repos.deleteRelease({
           owner,
           repo,
@@ -88,6 +98,7 @@ async function run() {
       }
 
       // Delete `tag` tag
+      core.info(`Deleting release tag (${tag})`);
       await github.git.deleteRef({
         owner,
         repo,
@@ -95,6 +106,7 @@ async function run() {
       });
     } catch (e) {
       // Do nothing
+      core.info(`Error cleaning up old releases: ${e}`);
     }
 
     // Create a release
@@ -115,11 +127,16 @@ async function run() {
     const htmlUrl = createReleaseResponse.data.html_url;
     const uploadUrl = createReleaseResponse.data.upload_url;
 
+    core.info(`Release ID: ${releaseId}`);
+    core.info(`HTML URL: ${htmlUrl}`);
+    core.info(`Upload URL: ${uploadUrl}`);
+
     // Set the output variables for use by other actions: https://github.com/actions/toolkit/tree/master/packages/core#inputsoutputs
     core.setOutput('id', releaseId);
     core.setOutput('html_url', htmlUrl);
     core.setOutput('upload_url', uploadUrl);
   } catch (error) {
+    core.info(`something failed: ${error}`);
     core.setFailed(error.message);
   }
 }
