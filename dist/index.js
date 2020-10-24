@@ -4431,7 +4431,7 @@ async function run() {
   try {
     // Get authenticated GitHub client (Ocktokit): https://github.com/actions/toolkit/tree/master/packages/github#usage
     const myToken = process.env.GITHUB_TOKEN;
-    const octokit = new github.getOctokit(myToken);
+    const octokit = github.getOctokit(myToken);
     const { context } = octokit;
 
     // Get owner and repo from context of payload that triggered the action
