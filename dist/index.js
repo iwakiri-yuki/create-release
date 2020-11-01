@@ -4427,6 +4427,10 @@ exports.request = request;
 const github = __webpack_require__(469);
 const core = __webpack_require__(470);
 
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function run() {
   try {
     // Get authenticated GitHub client (Ocktokit): https://github.com/actions/toolkit/tree/master/packages/github#usage
@@ -4490,6 +4494,9 @@ async function run() {
             repo,
             release_id: backupRelease.data.id
           });
+
+          core.info('Waiting for 10 seconds after backup release was deleted');
+          await sleep(10 * 1000);
         } catch (e) {
           core.info(`Error deleting existing backup release: ${e}`);
           // Do nothing
@@ -4515,6 +4522,9 @@ async function run() {
           sha: backupReleaseSha,
           force: true
         });
+
+        core.info('Waiting for 10 seconds after backup tag was updated');
+        await sleep(10 * 1000);
       } else {
         core.info(`Deleting old release (${oldRelease.data.id})`);
         await octokit.repos.deleteRelease({
@@ -4522,6 +4532,9 @@ async function run() {
           repo,
           release_id: oldRelease.data.id
         });
+
+        core.info('Waiting for 10 seconds after release was deleted');
+        await sleep(10 * 1000);
       }
 
       // Delete `tag` tag
@@ -4531,6 +4544,9 @@ async function run() {
         repo,
         ref: `tags/${tag}`
       });
+
+      core.info('Waiting for 10 seconds after release tag was deleted');
+      await sleep(10 * 1000);
     } catch (e) {
       // Do nothing
       core.info(`Error cleaning up old releases: ${e}`);
