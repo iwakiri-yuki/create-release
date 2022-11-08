@@ -30,7 +30,7 @@ async function run() {
 
     try {
       core.info('Trying to find existing release tag');
-      const tagResponse = await octokit.git.getRef({
+      const tagResponse = await octokit.rest.git.getRef({
         owner,
         repo,
         ref: `tags/${tag}`
@@ -45,7 +45,7 @@ async function run() {
     try {
       core.info('Trying to find existing release');
       // Get old release with `tag`
-      const oldRelease = await octokit.repos.getReleaseByTag({
+      const oldRelease = await octokit.rest.repos.getReleaseByTag({
         owner,
         repo,
         tag
@@ -55,7 +55,7 @@ async function run() {
         try {
           // Try to find backup release
           core.info('Find backup release');
-          const backupRelease = await octokit.repos.getReleaseByTag({
+          const backupRelease = await octokit.rest.repos.getReleaseByTag({
             owner,
             repo,
             tag: backupTag
@@ -63,7 +63,7 @@ async function run() {
 
           // Delete backup release
           core.info('Delete backup release');
-          await octokit.repos.deleteRelease({
+          await octokit.rest.repos.deleteRelease({
             owner,
             repo,
             release_id: backupRelease.data.id
@@ -78,7 +78,7 @@ async function run() {
 
         core.info('Making current release a backup release');
         // Move current `tag` release to `backupTag`
-        await octokit.repos.updateRelease({
+        await octokit.rest.repos.updateRelease({
           owner,
           repo,
           release_id: oldRelease.data.id,
@@ -89,7 +89,7 @@ async function run() {
         });
 
         core.info('Updating backup tag');
-        await octokit.git.updateRef({
+        await octokit.rest.git.updateRef({
           owner,
           repo,
           ref: `tags/${backupTag}`,
@@ -101,7 +101,7 @@ async function run() {
         await sleep(10 * 1000);
       } else {
         core.info(`Deleting old release (${oldRelease.data.id})`);
-        await octokit.repos.deleteRelease({
+        await octokit.rest.repos.deleteRelease({
           owner,
           repo,
           release_id: oldRelease.data.id
@@ -113,7 +113,7 @@ async function run() {
 
       // Delete `tag` tag
       core.info(`Deleting release tag (${tag})`);
-      await octokit.git.deleteRef({
+      await octokit.rest.git.deleteRef({
         owner,
         repo,
         ref: `tags/${tag}`
@@ -129,7 +129,7 @@ async function run() {
     // Create a release
     // API Documentation: https://developer.github.com/v3/repos/releases/#create-a-release
     // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-create-release
-    const createReleaseResponse = await octokit.repos.createRelease({
+    const createReleaseResponse = await octokit.rest.repos.createRelease({
       owner,
       repo,
       tag_name: tag,
