@@ -7090,17 +7090,11 @@ exports.getInput = getInput;
  * @param     name     name of the output to set
  * @param     value    value to store
  */
-const { exec } = require('child_process');
-
 function setOutput(name, value) {
-  const outputValue = `${name}=${value}`;
-  exec(`echo "${outputValue}" >> $GITHUB_PATH`, (err) => {
-    if (err) {
-      core.setFailed(err.message);
-      return;
-    }
-    core.exportVariable(name, value);
-  });
+  const command = `${name}=${value}`;
+  console.log(`::set-output name=${name}::${value}`); // 既存のset-outputコマンドを削除
+  fs.appendFileSync(process.env.GITHUB_ENV, command + '\n'); // "{name}={value}" >> $GITHUB_ENVを追加
+};
 }
 exports.setOutput = setOutput;
 //-----------------------------------------------------------------------
