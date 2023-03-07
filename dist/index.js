@@ -7091,9 +7091,9 @@ exports.getInput = getInput;
  * @param     value    value to store
  */
 function setOutput(name, value) {
-  const output = `${name}=${value}`;
-  const command = `echo "${output}" >> $GITHUB_OUTPUT`;
-  child_process.execSync(command, { stdio: 'inherit' });
+  const outputValue = `${name}=${value}`;
+  await exec(`echo "${outputValue}" >> $GITHUB_PATH`);
+  core.exportVariable(name, value);
 }
 exports.setOutput = setOutput;
 //-----------------------------------------------------------------------
