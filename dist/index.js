@@ -7092,8 +7092,9 @@ exports.getInput = getInput;
  */
 function setOutput(name, value) {
   const outputValue = `${name}=${value}`;
-  await exec(`echo "${outputValue}" >> $GITHUB_PATH`);
-  core.exportVariable(name, value);
+  exec(`echo "${outputValue}" >> $GITHUB_PATH`).then(() => {
+    core.exportVariable(name, value);
+  });
 }
 exports.setOutput = setOutput;
 //-----------------------------------------------------------------------
