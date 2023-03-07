@@ -7090,13 +7090,17 @@ exports.getInput = getInput;
  * @param     name     name of the output to set
  * @param     value    value to store
  */
+const { exec } = require('child_process');
+
 function setOutput(name, value) {
-    const filePath = process.env['GITHUB_OUTPUT'] || '';
-    if (filePath) {
-        return file_command_1.issueFileCommand('OUTPUT', file_command_1.prepareKeyValueMessage(name, value));
+  const outputValue = `${name}=${value}`;
+  exec(`echo "${outputValue}" >> $GITHUB_PATH`, (err) => {
+    if (err) {
+      core.setFailed(err.message);
+      return;
     }
-    process.stdout.write(os.EOL);
-    command_1.issueCommand('set-output', { name }, utils_1.toCommandValue(value));
+    core.exportVariable(name, value);
+  });
 }
 exports.setOutput = setOutput;
 //-----------------------------------------------------------------------
